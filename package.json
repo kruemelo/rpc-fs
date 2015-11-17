@@ -1,0 +1,26 @@
+{
+  "name": "rpc-fs",
+  "version": "0.0.1",
+  "description": "fs for fs-rpc",
+  "main": "rpc-fs.js",
+  "keywords": [
+    "node",
+    "fs",
+    "rpc"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/kruemelo/rpc-fs.git"
+  },  
+  "author": "kruemelo",
+  "license": "WTFPL",
+  "devDependencies": {
+    "chai": "^2.1.0",
+    "fs-extra": "^0.26.2",
+    "mocha": "^2.3.3"
+  },
+  "dependencies": {},
+  "scripts": {
+    "test": "mocha"
+  }
+}
