@@ -43,6 +43,7 @@
       
       result = {
         size: stats.size,
+        ino: stats.ino,
         isDirectory: stats.isDirectory(),
         atime: stats.atime.getTime(),
         mtime: stats.mtime.getTime(),

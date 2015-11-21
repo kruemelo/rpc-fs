@@ -97,6 +97,7 @@ describe('rpc-fs module', function () {
         assert.isNull(err, 'should not have an error');
         assert.isObject(result);
         assert.property(result, 'size');
+        assert.property(result, 'ino');
         assert.property(result, 'isDirectory');
         assert.property(result, 'mtime');
         assert.property(result, 'atime');
