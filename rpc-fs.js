@@ -17,6 +17,8 @@
 
   var RPCFS = function () {};
 
+  RPCFS.defaultChunkSize = 1024 * 128;
+
   // node fs functions
   RPCFS.prototype.mkdir = fs.mkdir;
   RPCFS.prototype.readdir = fs.readdir;
@@ -129,7 +131,7 @@
     });
 
     return this;
-  };
+  };  // readdirStat
 
 
   RPCFS.prototype.writeFileChunked = function (filename, data, options, callback) {
@@ -141,13 +143,65 @@
 
 
   RPCFS.prototype.readFileChunked = function (filename, options, callback) {
-    // chunked
+    
+    var chunkSize,
+      chunkToBeRead,
+      rs,
+      start, 
+      rsOptions,
+      result = {};
 
-    callback(new Error('not implemented'));
+    try {
 
+      if ('undefined' === typeof callback) {
+        // no options
+        callback = options;
+        options = options || {};
+      }
+
+
+      chunkToBeRead = options.chunk || 1;
+
+      chunkSize = options.chunkSize;
+
+      if (!chunkSize || chunkSize < 1024 || chunkSize > 1024 * 1024) {
+        chunkSize = RPCFS.defaultChunkSize;
+      }
+
+      result.content = '';  
+      result.chunkSize = chunkSize;
+
+      start = (chunkToBeRead - 1) * chunkSize;
+
+      rsOptions = {
+        start: start,
+        end: start + chunkSize,
+        flags: 'r',
+        encoding: 'base64',
+        autoClose: false
+      };
+          
+      rs = fs.createReadStream(filename, rsOptions);
+      
+      rs.on('readable', function () {
+        var chunk;
+        while (null !== (chunk = rs.read())) {
+          result.content += chunk;
+        }     
+      });
+      
+      rs.on('end', function () {
+        rs.close();  
+        result.chunkRead = chunkToBeRead;
+        callback(null, result);                    
+      });
+    }
+    catch (e) {
+      callback(e);
+    }
+    
     return this;
-  };
-
+  };  // readFileChunked
 
 
   return new RPCFS();
