@@ -34,6 +34,10 @@
       var result;
 
       if (err) { return callback(err); }
+      
+      if (!stats.isFile() && !stats.isDirectory()) { 
+        return callback(new Error('EENT')); 
+      }
 
       //       Stat Time Values (from https://nodejs.org/api/fs.html#fs_class_fs_stats)
       // The times in the stat object have the following semantics:
@@ -46,6 +50,7 @@
       result = {
         size: stats.size,
         ino: stats.ino,
+        isFile: stats.isFile(),
         isDirectory: stats.isDirectory(),
         atime: stats.atime.getTime(),
         mtime: stats.mtime.getTime(),
@@ -57,7 +62,8 @@
     });
 
     return this;
-  };
+  };  // stat
+
 
   RPCFS.prototype.stats = function (files, callback) {
 
@@ -97,7 +103,7 @@
     filesIterator.next();
 
     return this;
-  };
+  };  // stats
 
 
   RPCFS.prototype.readdirStat = function (dirpath, callback) {
@@ -121,7 +127,10 @@
         if (err) { return callback(err); }
 
         Object.keys(fileStats).forEach(function (filename) {
-          readdirStats[path.basename(filename)] = fileStats[filename];
+          var stats = fileStats[filename];
+          if (stats && (stats.isFile || stats.isDirectory)) {
+            readdirStats[path.basename(filename)] = stats;            
+          }
         });
 
         callback(null, readdirStats);
@@ -139,67 +148,76 @@
     callback(new Error('not implemented'));
 
     return this;
-  };
+  };  // writeFileChunked
 
 
   RPCFS.prototype.readFileChunked = function (filename, options, callback) {
     
     var chunkSize,
-      chunkToBeRead,
+      chunkNo,
       rs,
       start, 
       rsOptions,
       result = {};
 
-    try {
-
-      if ('undefined' === typeof callback) {
-        // no options
-        callback = options;
-        options = options || {};
-      }
-
-
-      chunkToBeRead = options.chunk || 1;
-
-      chunkSize = options.chunkSize;
-
-      if (!chunkSize || chunkSize < 1024 || chunkSize > 1024 * 1024) {
-        chunkSize = RPCFS.defaultChunkSize;
-      }
-
-      result.content = '';  
-      result.chunkSize = chunkSize;
-
-      start = (chunkToBeRead - 1) * chunkSize;
-
-      rsOptions = {
-        start: start,
-        end: start + chunkSize,
-        flags: 'r',
-        encoding: 'base64',
-        autoClose: false
-      };
-          
-      rs = fs.createReadStream(filename, rsOptions);
-      
-      rs.on('readable', function () {
-        var chunk;
-        while (null !== (chunk = rs.read())) {
-          result.content += chunk;
-        }     
-      });
-      
-      rs.on('end', function () {
-        rs.close();  
-        result.chunkRead = chunkToBeRead;
-        callback(null, result);                    
-      });
+    if ('undefined' === typeof callback) {
+      // no options
+      callback = options;
+      options = options || {};
     }
-    catch (e) {
-      callback(e);
-    }
+
+    this.stat(filename, function (err, stats) {
+
+      if (err) { return callback(err); }
     
+      try {
+
+        result.stats = stats;
+
+        chunkNo = options.chunk || 1;
+
+        chunkSize = options.chunkSize;
+
+        if (!chunkSize || chunkSize < 1024 || chunkSize > 1024 * 1024) {
+          chunkSize = RPCFS.defaultChunkSize;
+        }
+
+        result.content = '';  
+        result.chunkSize = chunkSize;
+
+        start = (chunkNo - 1) * chunkSize;
+
+        rsOptions = {
+          start: start,
+          end: start + chunkSize,
+          flags: 'r',
+          encoding: 'base64',
+          autoClose: false
+        };
+            
+        rs = fs.createReadStream(filename, rsOptions);
+        
+        rs.on('readable', function () {
+          var chunk;
+          while (null !== (chunk = rs.read())) {
+            result.content += chunk;
+          }     
+        });
+        
+        rs.on('end', function () {
+          rs.close();  
+          result.chunk = chunkNo;
+          result.EOF = start + chunkSize >= stats.size;
+          callback(null, result);                    
+        });
+
+      }
+      catch (e) {
+        callback(e);
+      }
+      
+    });
+      
     return this;
   };  // readFileChunked
 
