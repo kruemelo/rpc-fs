@@ -164,6 +164,11 @@
   };  // writeFileChunked
 
 
+  /* readFileChunked (filename, options, callback)
+  * options: {chunkSize: 128k, chunk: 2}
+  * callback: (err, result)
+  * result: {chunk: 1, EOF: true, content: 'base64', chunkSize: 128k, stats: {}}
+  */
   RPCFS.prototype.readFileChunked = function (filename, options, callback) {
     
     var chunkSize,
@@ -187,9 +192,9 @@
 
         result.stats = stats;
 
-        chunkNo = options.chunk || 1;
+        chunkNo = Math.abs(options.chunk) || 1;
 
-        chunkSize = options.chunkSize;
+        chunkSize = Number(options.chunkSize);
 
         if (!chunkSize || chunkSize < 1024 || chunkSize > 1024 * 1024) {
           chunkSize = RPCFS.defaultChunkSize;
@@ -204,7 +209,8 @@
           start: start,
           end: start + chunkSize,
           flags: 'r',
-          encoding: 'base64',
+          // first, read as utf8
+          encoding: 'utf8',
           autoClose: false
         };
             
@@ -213,14 +219,15 @@
         rs.on('readable', function () {
           var chunk;
           while (null !== (chunk = rs.read())) {
-            result.content += chunk;
+            // now convert from utf-8 to base64
+            result.content += (new Buffer(chunk)).toString('base64');
           }     
         });
         
         rs.on('end', function () {
           rs.close();  
           result.chunk = chunkNo;
-          result.EOF = start + chunkSize >= stats.size;
+          result.EOF = start + chunkSize >= stats.size - 1;
           callback(null, result);                    
         });
 
