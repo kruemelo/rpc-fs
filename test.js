@@ -7,7 +7,6 @@ var path = require('path');
 var RPCFS = require('./rpc-fs.js');
 
 /*global assert */
-/* //global console */
 describe('rpc-fs module', function () {
 
   var testDir = path.join(os.tmpDir(), 'rpc-fs-test');
@@ -17,7 +16,7 @@ describe('rpc-fs module', function () {
     fs.emptyDirSync(testDir);
     fs.copySync(fixturesPath, testDir);    
     done();
-  }); 
+  });  
 
 
   it('should have loaded module', function () {
@@ -194,11 +193,55 @@ describe('rpc-fs module', function () {
           assert.strictEqual(result.EOF, false, 'not read to end of file');          
           assert.strictEqual(result.stats.isFile, true, 'stats is file');          
           assert.strictEqual(result.stats.size, 3446, 'stats size');     
-          assert.strictEqual(result.chunkSize, 1024, 'default chunk size');
+          assert.strictEqual(result.chunkSize, 1024, 'chunk size used');
           done();
         }
       );
-    });
+    });   // read file chunked, options chunk
+
+
+    it('should write a file', function (done) {
+
+      var filename = path.join(testDir, 'file2'),
+        fileContentUtf8 = 'file2 content';
+
+      assert.isFunction(RPCFS.writeFileChunked);
+
+      // first chunk, create file
+      RPCFS.writeFileChunked(
+        filename,
+        // expects a base64 encoded string
+        new Buffer(fileContentUtf8).toString('base64'),
+        function (err) {
+          
+          assert.isNull(err, 'should not have an error');
+          assert.strictEqual(
+            fs.readFileSync(filename, 'utf8'), 
+            fileContentUtf8, 
+            'file content'
+          );
+
+          // append next chunk
+          RPCFS.writeFileChunked(
+            filename,
+            new Buffer(fileContentUtf8).toString('base64'),
+            function (err) {
+              
+              assert.isNull(err, 'should not have an error');
+              assert.strictEqual(
+                fs.readFileSync(filename, 'utf8'), 
+                fileContentUtf8 + fileContentUtf8, 
+                'file content appended'
+              );
+
+              done();
+            }
+          );
+
+        }
+      );
+
+    }); // write file chunked
 
 
   }); // describe additional functions

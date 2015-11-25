@@ -19,6 +19,7 @@
     "process": true,
     "define": false,
     "require": false,
+    "__dirname": true,
     "chai": false,
     "mocha": true,
     "module": true,
