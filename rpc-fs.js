@@ -209,8 +209,8 @@
           start: start,
           end: start + chunkSize,
           flags: 'r',
-          // first, read as utf8
-          encoding: 'utf8',
+          // first, read raw
+          encoding: null,
           autoClose: false
         };
             
@@ -219,8 +219,8 @@
         rs.on('readable', function () {
           var chunk;
           while (null !== (chunk = rs.read())) {
-            // now convert from utf-8 to base64
-            result.content += (new Buffer(chunk)).toString('base64');
+            // then convert from raw to base64
+            result.content += chunk.toString('base64');
           }     
         });
         
