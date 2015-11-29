@@ -212,8 +212,7 @@ describe('rpc-fs module', function () {
         filename,
         // expects a base64 encoded string
         new Buffer(fileContentUtf8).toString('base64'),
-        function (err) {
-          
+        function (err) {          
           assert.isNull(err, 'should not have an error');
           assert.strictEqual(
             fs.readFileSync(filename, 'utf8'), 
@@ -225,6 +224,7 @@ describe('rpc-fs module', function () {
           RPCFS.writeFileChunked(
             filename,
             new Buffer(fileContentUtf8).toString('base64'),
+            {chunk: 2},
             function (err) {
               
               assert.isNull(err, 'should not have an error');

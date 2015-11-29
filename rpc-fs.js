@@ -140,12 +140,17 @@
     return this;
   };  // readdirStat
 
-  // optional options - currently not used
+  /* 
+  * optional options
+  * - chunk: optional number default 1; chunk number to write
+  * call serial, in-order
+  */
   RPCFS.prototype.writeFileChunked = function (filename, data, options, callback) {
 
-    var afOptions = {
-      encoding: 'base64'
-    };
+    var chunk,
+      afOptions = {
+        encoding: 'base64'
+      };
 
     if ('undefined' === typeof callback) {
       // no options
@@ -153,8 +158,29 @@
       options = options || {};
     }
 
-    try {
+    chunk = Number.parseInt(options.chunk) || 1;
+
+    function writeChunk () {
       fs.appendFile(filename, data, afOptions, callback);
+    }
+
+    try {      
+      if (1 === chunk) {
+        fs.access(filename, fs.R_OK | fs.W_OK, function (err) {
+          if (err) {            
+            writeChunk();
+          }
+          else {
+            fs.truncate(filename, 0, function (err) {
+              if (err) { throw err; }
+              writeChunk();
+            });
+          }
+        });
+      }
+      else {
+        writeChunk();
+      }
     }
     catch (e) {
       callback(e);      
