@@ -48,26 +48,11 @@ describe('rpc-fs module', function () {
 
       RPCFS.readdir(testDir, function (err, result) {
         assert.isNull(err, 'should not have an error');
-        assert.deepEqual(result, ['dirA', 'dirB', 'file0', 'file1']);
+        assert.deepEqual(result, ['dirA', 'dirB', 'dirC', 'file0', 'file1']);
         done();
       });
       
     });
-
-
-    it('should use node fs exists', function (done) {
-
-      var filename = path.join(testDir, 'dirB');
-      
-      assert.isFunction(RPCFS.exists);
-
-      RPCFS.exists(filename, function (exists) {
-        assert.isTrue(exists);
-        done();
-      });
-      
-    });
-
 
     it('should use node fs rmdir', function (done) {
 
@@ -87,6 +72,21 @@ describe('rpc-fs module', function () {
 
 
   describe('additional functions', function () {
+
+
+    it('should use own exists()', function (done) {
+
+      var filename = path.join(testDir, 'dirC');
+      
+      assert.isFunction(RPCFS.exists);
+
+      RPCFS.exists(filename, function (exists) {
+        assert.isTrue(exists);
+        done();
+      });
+      
+    });
+
 
     it('should use own stat() implementation', function (done) {
       

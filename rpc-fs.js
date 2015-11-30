@@ -25,7 +25,18 @@
   RPCFS.prototype.readdir = fs.readdir;
   RPCFS.prototype.rmdir = fs.rmdir;
   RPCFS.prototype.unlink = fs.unlink;
-  RPCFS.prototype.exists = fs.exists;
+  // deprecated
+  // RPCFS.prototype.exists = fs.exists;
+
+  // replace functions
+  RPCFS.prototype.exists = function (path, callback) {
+    
+    fs.access(path, fs.F_OK, function (err) {
+      callback(!err);
+    });
+
+    return this;
+  };
 
   // additional functions
 
