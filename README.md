@@ -63,7 +63,7 @@ fs.readFileChunked('/file0', {chunk: 1, chunkSize: 42} function (err, result) {
 });
 ```
 
-### rwriteFileChunked = function (filename, data, options, callback)
+### writeFileChunked(filename, data, options, callback)
 
 write chunks of a file
 
