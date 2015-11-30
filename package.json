@@ -1,6 +1,6 @@
 {
   "name": "rpc-fs",
-  "version": "0.3.5",
+  "version": "0.3.6",
   "description": "fs for fs-rpc",
   "main": "rpc-fs.js",
   "keywords": [
