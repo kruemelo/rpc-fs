@@ -74,6 +74,12 @@ fs.writeFileChunked('/file0', 'file content', {chunk: 1} function (err) {
 ```
 call in-order, chunks will be appended
 
+## install
+
+requires node >= 5.0 (uses generator/yield)
+
+    $ npm install
+
 ## Test
 
     $ npm test

@@ -1,6 +1,6 @@
 {
   "name": "rpc-fs",
-  "version": "0.3.6",
+  "version": "0.3.7",
   "description": "fs for fs-rpc",
   "main": "rpc-fs.js",
   "keywords": [
@@ -14,6 +14,9 @@
   },
   "author": "kruemelo",
   "license": "WTFPL",
+  "engines" : { 
+    "node" : ">=5.0"
+  },
   "devDependencies": {
     "chai": "^2.1.0",
     "fs-extra": "^0.26.2",
