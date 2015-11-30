@@ -1,6 +1,6 @@
 {
   "name": "rpc-fs",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "fs for fs-rpc",
   "main": "rpc-fs.js",
   "keywords": [
@@ -11,7 +11,7 @@
   "repository": {
     "type": "git",
     "url": "git://github.com/kruemelo/rpc-fs.git"
-  },  
+  },
   "author": "kruemelo",
   "license": "WTFPL",
   "devDependencies": {
@@ -19,7 +19,9 @@
     "fs-extra": "^0.26.2",
     "mocha": "^2.3.3"
   },
-  "dependencies": {},
+  "dependencies": {
+    "rimraf": "^2.4.4"
+  },
   "scripts": {
     "test": "mocha"
   }

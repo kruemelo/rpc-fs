@@ -13,7 +13,8 @@
   'use strict';
 
   var fs = require('fs'),
-    path = require('path');
+    path = require('path'),
+    rimraf = require('rimraf');
 
   var RPCFS = function () {};
 
@@ -27,6 +28,10 @@
   RPCFS.prototype.exists = fs.exists;
 
   // additional functions
+
+  // rm -rf
+  RPCFS.prototype.rmrf = rimraf;
+
   RPCFS.prototype.stat = function (filename, callback) {
 
     fs.stat(filename, function (err, stats) {
