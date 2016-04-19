@@ -162,6 +162,7 @@
   /* 
   * optional options
   * - chunk: optional number default 1; chunk number to write
+  * - chunks: optional number default 1; total number of chunks to be written
   * call serial, in-order
   */
   RPCFS.prototype.writeFileChunked = function (filename, data, options, callback) {
@@ -181,7 +182,7 @@
 
     tmpFilename = path.join(
       this.tmpdir,
-      'tmp' + path.basename(filename)
+      'rpcfstmp' + path.basename(filename)
     );
 
     chunk = Number.parseInt(options.chunk) || 1;
