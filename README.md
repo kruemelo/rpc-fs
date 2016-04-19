@@ -75,10 +75,10 @@ fs.writeFileChunked('/file0', 'file content', {chunk: 1, chunks: 1}, function (e
 call in-order, chunks will be appended
 
 
-* filename <String> 
-* data <String> | <Buffer>
-* options <Object>
-* callback <Function>
+* filename &lt;String&gt;
+* data &lt;String&gt; | &lt;Buffer&gt;
+* options &lt;Object&gt;
+* callback &lt;Function&gt;
 
 options:
 
