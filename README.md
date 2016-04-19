@@ -90,13 +90,15 @@ options:
 ```
 
 How to calculate the total number of chunks?
-``
+
+```
 data = Buffer.from('this is a tést');
 chunkSize = 4096;
 chunks = Math.ceil(data.byteLength / chunkSize);
 ```
 
 Keep in mind that the actual byte length of a string is not the same as String.prototype.length since that returns the number of characters in a string:
+
 ```
 > s = 'this is a tést'
 'this is a tést'
