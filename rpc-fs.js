@@ -14,9 +14,12 @@
 
   var fs = require('fs'),
     path = require('path'),
-    rimraf = require('rimraf');
+    rimraf = require('rimraf'),
+    os = require('os');
 
-  var RPCFS = function () {};
+  var RPCFS = function () {
+    this.tmpdir = os.tmpdir();
+  };
 
   RPCFS.defaultChunkSize = 1024 * 128;
 
@@ -164,9 +167,11 @@
   RPCFS.prototype.writeFileChunked = function (filename, data, options, callback) {
 
     var chunk,
+      chunks,
       afOptions = {
         encoding: 'base64'
-      };
+      },
+      tmpFilename;
 
     if ('undefined' === typeof callback) {
       // no options
@@ -174,32 +179,43 @@
       options = options || {};
     }
 
+    tmpFilename = path.join(
+      this.tmpdir,
+      'tmp' + path.basename(filename)
+    );
+
     chunk = Number.parseInt(options.chunk) || 1;
+    chunks = Number.parseInt(options.chunks) || 1;
 
     function writeChunk () {
-      fs.appendFile(filename, data, afOptions, callback);
-    }
+      fs.appendFile(tmpFilename, data, afOptions, function (err) {
 
-    try {      
-      if (1 === chunk) {
-        fs.access(filename, fs.R_OK | fs.W_OK, function (err) {
-          if (err) {            
-            writeChunk();
-          }
-          else {
-            fs.truncate(filename, 0, function (err) {
-              if (err) { throw err; }
-              writeChunk();
-            });
-          }
-        });
-      }
-      else {
-        writeChunk();
-      }
+        if (err || chunk !== chunks) {
+          return callback(err);
+        }
+
+        // all chunks done, rename to target filename
+        fs.rename(tmpFilename, filename, callback);
+
+      });
     }
-    catch (e) {
-      callback(e);      
+    
+    if (1 === chunk) {
+      fs.access(tmpFilename, fs.F_OK, function (err) {
+        if (err) {            
+          writeChunk();
+        }
+        else {
+          // tmp file exists, truncate
+          fs.truncate(tmpFilename, 0, function (err) {
+            if (err) { throw err; }
+            writeChunk();
+          });
+        }
+      });
+    }
+    else {
+      writeChunk();
     }
 
     return this;

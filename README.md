@@ -1,6 +1,6 @@
 provides a subset of node fs functions to be used by fs-rpc
 
-synchronous versions ar not available
+synchronous versions are not available
 
 ```
 var fs = require('rpc-fs');
@@ -68,11 +68,47 @@ fs.readFileChunked('/file0', {chunk: 1, chunkSize: 42} function (err, result) {
 write chunks of a file
 
 ```
-fs.writeFileChunked('/file0', 'file content', {chunk: 1} function (err) {
+fs.writeFileChunked('/file0', 'file content', {chunk: 1, chunks: 1}, function (err) {
 	..
 });
 ```
 call in-order, chunks will be appended
+
+
+* filename <String> 
+* data <String> | <Buffer>
+* options <Object>
+* callback <Function>
+
+options:
+
+```
+{
+ chunk: 1  // current chunk number, default: 1
+ chunks: 2 // total number of chunks, default: 1
+}
+```
+
+How to calculate the total number of chunks?
+``
+data = Buffer.from('this is a tést');
+chunkSize = 4096;
+chunks = Math.ceil(data.byteLength / chunkSize);
+```
+
+Keep in mind that the actual byte length of a string is not the same as String.prototype.length since that returns the number of characters in a string:
+```
+> s = 'this is a tést'
+'this is a tést'
+> s.length
+14
+> b = Buffer.from(s)
+<Buffer 74 68 69 73 20 69 73 20 61 20 74 c3 a9 73 74>
+> b.byteLength
+15
+> Buffer.byteLength(s)
+15
+```
 
 ## install
 
