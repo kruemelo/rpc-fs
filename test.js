@@ -255,6 +255,18 @@ describe('rpc-fs module', function () {
     }); // remove a non-empty directory recursively
 
 
+    it('should mkdirp', function (done) {
+      var filename = path.join(testDir, 'not/existing/pathname');
+      
+      assert.isFunction(RPCFS.mkdirp);
+
+      RPCFS.mkdirp(filename, function (err) {
+        assert.isNull(err, 'should not have an error');
+        assert.isTrue(fs.existsSync(filename));
+        done();
+      });
+    });
+
   }); // describe additional functions
 
 }); // describe rpc-fs module

@@ -15,7 +15,8 @@
   var fs = require('fs'),
     path = require('path'),
     rimraf = require('rimraf'),
-    os = require('os');
+    os = require('os'),
+    mkdirp = require('mkdirp');
 
   var RPCFS = function () {
     this.tmpdir = os.tmpdir();
@@ -28,6 +29,7 @@
   RPCFS.prototype.readdir = fs.readdir;
   RPCFS.prototype.rmdir = fs.rmdir;
   RPCFS.prototype.unlink = fs.unlink;
+
   // deprecated
   // RPCFS.prototype.exists = fs.exists;
 
@@ -42,6 +44,9 @@
   };
 
   // additional functions
+
+  // mkdir -p
+  RPCFS.prototype.mkdirp = mkdirp;
 
   // rm -rf
   RPCFS.prototype.rmrf = rimraf;

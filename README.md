@@ -10,6 +10,14 @@ fs.mkdir('/dirA', function (err) { .. });
 
 ##additional functions
 
+### mkdirp(path, callback)
+
+mkdir -p
+
+```
+fs.mkdirp('/not/existing/pathname', function (err) { .. });
+
+```
 
 ### rmrf(path, callback)
 rm -rf dirA
