@@ -120,7 +120,7 @@
       callback(error, dirStats);
     } 
 
-    filesIterator = new Iterator();
+    filesIterator = Iterator();
 
     filesIterator.next();
 
