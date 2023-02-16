@@ -9,7 +9,7 @@ var RPCFS = require('./rpc-fs.js');
 /*global assert */
 describe('rpc-fs module', function () {
 
-  var testDir = path.join(os.tmpDir(), 'rpc-fs-test');
+  var testDir = path.join(os.tmpdir(), 'rpc-fs-test');
 
   before(function (done) {
     var fixturesPath = path.join(__dirname, 'fixtures', 'testFS');
