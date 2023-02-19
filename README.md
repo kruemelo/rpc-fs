@@ -1,55 +1,56 @@
 provides a subset of node fs functions to be used by fs-rpc
 
-synchronous versions are not available
+Only synchronous versions are available
 
 ```
-var fs = require('rpc-fs');
-fs.mkdir('/dirA', function (err) { .. });
+import fs from "rpc-fs"
+import {rpcfs: fs} from "rpc-fs"
+
+await fs.mkdir('/dirA');
 
 ```
 
-##additional functions
+## additional functions
 
-### mkdirp(path, callback)
+### mkdirp(path)
 
 mkdir -p
 
 ```
-fs.mkdirp('/not/existing/pathname', function (err) { .. });
+fs.mkdirp('/not/existing/pathname');
 
 ```
 
-### rmrf(path, callback)
+### rmrf(path)
 rm -rf dirA
 
 ```
-fs.rmrf('/dirA', callback);
+fs.rmrf('/dirA');
 ```
 
-### stats([filename1, filename2, ..], callback)
+### stats([filename1, filename2, ..])
 
 get stats for multiple files
 
 ```
-fs.stats(['/dirA', 'file0'], function (err, statList) {
-	-> statList = {
+await fs.stats(['/dirA', 'file0']);
+
+	-> {
 		"file0": {size: 42, mtime: 1448884388662, ino: 2342, birthtime: 1448884388665 ..},
 		"dirA": {size: 42, mtime: 1448884388663, ..}
 	}
-});
 ```
 
-### readdirStat(path, callback)
+### readdirStats(path, callback)
 
 readdir() and stat() combined
 
 ```
-fs.readdirStat('/dirA', function (err, dirstats) {
-	-> dirstats = {
+await fs.readdirStats('/dirA') 
+	-> {
 		"file1": {size: 42, mtime: 1448884388662, ..},
 		"dir 2": {size: 42, mtime: 1448884388663, ..}
 	}
-});
 ```
 
 ### readFileChunked(filename, options, callback)
@@ -122,9 +123,7 @@ Keep in mind that the actual byte length of a string is not the same as String.p
 
 ## install
 
-requires node >= 5.0 (uses generator/yield)
-
-    $ npm install
+$ npm i rpc-fs
 
 ## Test
 
