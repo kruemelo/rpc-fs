@@ -32,6 +32,7 @@
   },
   "scripts": {
     "fix": "npx eslint --fix ./src",
+    "watch": "./node_modules/.bin/mocha --watch --parallel",
     "test": "mocha"
   }
 }
