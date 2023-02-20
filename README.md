@@ -41,15 +41,15 @@ await fs.stats(['/dirA', 'file0']);
 	}
 ```
 
-### readdirStats(path, callback)
+### readdirStats(path)
 
 readdir() and stat() combined
 
 ```
 await fs.readdirStats('/dirA') 
 	-> {
-		"file1": {size: 42, mtime: 1448884388662, ..},
-		"dir 2": {size: 42, mtime: 1448884388663, ..}
+		"file1": {isDirectory: false, isFile: true, size: 42, mtime: 1448884388662, ..},
+		"dir 2": {isDirectory: true, isFile: false, size: 42, mtime: 1448884388663, ..}
 	}
 ```
 
