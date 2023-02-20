@@ -28,19 +28,6 @@ rm -rf dirA
 fs.rmrf('/dirA');
 ```
 
-### stats([filename1, filename2, ..])
-
-get stats for multiple files
-
-```
-await fs.stats(['/dirA', 'file0']);
-
-	-> {
-		"file0": {size: 42, mtime: 1448884388662, ino: 2342, birthtime: 1448884388665 ..},
-		"dirA": {size: 42, mtime: 1448884388663, ..}
-	}
-```
-
 ### readdirStats(path)
 
 readdir() and stat() combined

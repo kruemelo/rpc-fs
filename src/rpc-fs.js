@@ -21,7 +21,7 @@ import rimraf from "rimraf";
 import mkdirp from "mkdirp";
 
 import { stat as rpcStat } from "./stat.js";
-import { readdirStats, stats } from "./readdirStat.js";
+import { readdirStats } from "./readdirStats.js";
 
 export const rpcfs = {
   constants,
@@ -48,7 +48,6 @@ export const rpcfs = {
   mkdirp,
   // rm -rf
   rmrf: rimraf,
-  stats,
   readdirStats,
 };
 

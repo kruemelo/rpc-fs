@@ -78,24 +78,6 @@ describe('rpc-fs module', function () {
       assert.isTrue(result.isDirectory);
     });
 
-    it('should stat for multiple files', async () => {
-      const filenames = [
-        path.join(testDir, 'dirA'),
-        path.join(testDir, 'file0'),
-        path.join(testDir, 'dirA', 'fileA')
-      ];
-
-      assert.isFunction(rpcfs.stats);
-
-      const result = await rpcfs.stats(filenames);
-      filenames.forEach(filename => {
-        assert.isObject(
-          result[filename], 
-          'result should have a "' + filename + '"" property typeof object'
-        );
-      });
-    });
-
     // readdirStat
     it('should read dir and content stats', async () => {
       assert.isFunction(rpcfs.readdirStats);
