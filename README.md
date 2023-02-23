@@ -22,6 +22,7 @@ fs.mkdirp('/not/existing/pathname');
 ```
 
 ### rmrf(path)
+
 rm -rf dirA
 
 ```
