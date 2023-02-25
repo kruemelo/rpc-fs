@@ -1,3 +1,5 @@
+import { constants } from "node:fs";
+
 import {
   access,
   appendFile,
@@ -15,73 +17,45 @@ import {
   utimes,
   writeFile,
 } from "node:fs/promises";
-import { constants } from "node:fs";
 
 import rimraf from "rimraf";
 import mkdirp from "mkdirp";
 
 import { stat as rpcStat } from "./stat.js";
 import { readdirStats } from "./readdirStats.js";
-import { accessiblePath } from "./accessiblePath.js";
+import { wrapAccess } from "./wrapAccess.js";
 
 const requestAccessDefault = async () => true;
 
 const RPCFS = ({ fsBasePath, requestAccess = requestAccessDefault }) => {
-  const getAccessiblePath = accessiblePath({
-    fsBasePath,
-    requestAccess,
-  });
-
-  const wrapAccess = (pathArgModes, method, fn) => {
-    return {
-      [method]: async (...args) => {
-        // shallow copy of arguments
-        args = [...args];
-
-        // modify path arguments
-        let argIndex = 0;
-        for (const mode of pathArgModes) {
-          if (typeof mode === "number") {
-            args[argIndex] = await getAccessiblePath({
-              path: args[argIndex],
-              method,
-              mode,
-            });
-          }
-          ++argIndex;
-        }
-
-        return fn(...args);
-      },
-    };
-  };
+  const wrap = wrapAccess({ fsBasePath, requestAccess });
 
   return {
     constants,
 
-    ...wrapAccess([constants.F_OK], "access", access),
-    ...wrapAccess([constants.W_OK], "appendFile", appendFile),
-    ...wrapAccess([constants.R_OK, constants.W_OK], "copyFile", copyFile),
-    ...wrapAccess([constants.R_OK, constants.W_OK], "cp", cp),
-    ...wrapAccess([constants.W_OK], "mkdir", mkdir),
-    ...wrapAccess([constants.R_OK], "readFile", readFile),
-    ...wrapAccess([constants.R_OK], "readdir", readdir),
-    ...wrapAccess([constants.W_OK, constants.W_OK], "rename", rename),
-    ...wrapAccess([constants.W_OK], "rm", rm),
-    ...wrapAccess([constants.W_OK], "rmdir", rmdir),
-    ...wrapAccess([constants.R_OK, constants.W_OK], "symlink", symlink),
-    ...wrapAccess([constants.F_OK], "stat", rpcStat),
-    ...wrapAccess([constants.W_OK], "truncate", truncate),
-    ...wrapAccess([constants.W_OK], "unlink", unlink),
-    ...wrapAccess([constants.W_OK], "utimes", utimes),
-    ...wrapAccess([constants.W_OK], "writeFile", writeFile),
+    ...wrap("access", access),
+    ...wrap("appendFile", appendFile),
+    ...wrap("copyFile", copyFile),
+    ...wrap("cp", cp),
+    ...wrap("mkdir", mkdir),
+    ...wrap("readFile", readFile),
+    ...wrap("readdir", readdir),
+    ...wrap("rename", rename),
+    ...wrap("rm", rm),
+    ...wrap("rmdir", rmdir),
+    ...wrap("symlink", symlink),
+    ...wrap("stat", rpcStat),
+    ...wrap("truncate", truncate),
+    ...wrap("unlink", unlink),
+    ...wrap("utimes", utimes),
+    ...wrap("writeFile", writeFile),
 
     // additional functions
     // mkdir -p
-    ...wrapAccess([constants.W_OK], "mkdirp", mkdirp),
+    ...wrap("mkdirp", mkdirp),
     // rm -rf
-    ...wrapAccess([constants.W_OK], "rmrf", rimraf),
-    ...wrapAccess([constants.F_OK], "readdirStats", readdirStats),
+    ...wrap("rmrf", rimraf),
+    ...wrap("readdirStats", readdirStats),
   };
 };
 
