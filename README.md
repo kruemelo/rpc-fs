@@ -1,6 +1,6 @@
 provides a subset of node fs functions to be used by fs-rpc
 
-Only synchronous versions are available
+Only asynchronous methods are available.
 
 ```
 import fs from "rpc-fs"
